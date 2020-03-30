@@ -1,6 +1,6 @@
 <?php
 
-class TypedList implements IteratorAggregate, Countable, ArrayAccess
+class TypedList extends ArrayObject
 {
     protected string $type;
     protected array $values = [];
@@ -14,6 +14,7 @@ class TypedList implements IteratorAggregate, Countable, ArrayAccess
 
     protected function __construct()
     {
+        parent::__construct();
     }
 
     public function getIterator(): ArrayIterator
@@ -60,6 +61,11 @@ class TypedList implements IteratorAggregate, Countable, ArrayAccess
     public function count(): int
     {
         return count($this->values);
+    }
+
+    public function sort(): bool
+    {
+        return sort($this->values);
     }
 
     /**
@@ -171,7 +177,7 @@ $geneString = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT";
 
 $gene = string_to_gene($geneString);
 
-function linear_contains(Gene $gene, Codon $codon)
+function linear_contains(Gene $gene, Codon $codon): bool
 {
     /** @var Codon $geneCodon */
     foreach ($gene as $geneCodon) {
@@ -188,11 +194,35 @@ $codonAcg = Codon::forType('Nucleotide')
     ->add(Nucleotide::fromString('C'))
     ->add(Nucleotide::fromString('G'));
 
-var_dump(linear_contains($gene, $codonAcg));
-
 $codonGat = Codon::forType('Nucleotide')
     ->add(Nucleotide::fromString('G'))
     ->add(Nucleotide::fromString('A'))
     ->add(Nucleotide::fromString('T'));
 
+var_dump(linear_contains($gene, $codonAcg));
 var_dump(linear_contains($gene, $codonGat));
+
+function binary_contains(Gene $gene, Codon $codon): bool
+{
+    $low = 0;
+    $high = count($gene) - 1;
+
+    while ($low <= $high) {
+        $mid = intdiv(($low + $high), 2);
+
+        if ($codon > $gene[$mid]) {
+            $low = $mid + 1;
+        } elseif ($codon < $gene[$mid]) {
+            $high = $mid - 1;
+        } else {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+$sortedGene = $gene->sort();
+
+var_dump(binary_contains($gene, $codonAcg));
+var_dump(binary_contains($gene, $codonGat));
