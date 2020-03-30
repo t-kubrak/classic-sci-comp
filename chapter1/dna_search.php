@@ -153,7 +153,7 @@ class Gene extends TypedList
 
 function string_to_gene(string $geneString): Gene
 {
-    $gene = Gene::forType('Codon');
+    $gene = Gene::forType(Codon::class);
     $geneChars = str_split($geneString);
     $geneCharsCount = count($geneChars);
 
@@ -162,7 +162,7 @@ function string_to_gene(string $geneString): Gene
             return $gene;
         }
 
-        $codon = Codon::forType('Nucleotide')
+        $codon = Codon::forType(Nucleotide::class)
             ->add(Nucleotide::fromString($geneChars[$i]))
             ->add(Nucleotide::fromString($geneChars[$i + 1]))
             ->add(Nucleotide::fromString($geneChars[$i + 2]));
@@ -189,15 +189,15 @@ function linear_contains(Gene $gene, Codon $codon): bool
     return false;
 }
 
-$codonAcg = Codon::forType('Nucleotide')
-    ->add(Nucleotide::fromString('A'))
-    ->add(Nucleotide::fromString('C'))
-    ->add(Nucleotide::fromString('G'));
+$codonAcg = Codon::forType(Nucleotide::class)
+    ->add(Nucleotide::fromString(Nucleotide::A))
+    ->add(Nucleotide::fromString(Nucleotide::C))
+    ->add(Nucleotide::fromString(Nucleotide::G));
 
-$codonGat = Codon::forType('Nucleotide')
-    ->add(Nucleotide::fromString('G'))
-    ->add(Nucleotide::fromString('A'))
-    ->add(Nucleotide::fromString('T'));
+$codonGat = Codon::forType(Nucleotide::class)
+    ->add(Nucleotide::fromString(Nucleotide::G))
+    ->add(Nucleotide::fromString(Nucleotide::A))
+    ->add(Nucleotide::fromString(Nucleotide::T));
 
 var_dump(linear_contains($gene, $codonAcg));
 var_dump(linear_contains($gene, $codonGat));
