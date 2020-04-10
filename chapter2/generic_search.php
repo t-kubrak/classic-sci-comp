@@ -1,5 +1,7 @@
 <?php
 
+class Sequence extends ArrayObject {}
+
 class TypedSequence extends ArrayObject
 {
     protected string $type;

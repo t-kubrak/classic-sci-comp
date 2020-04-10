@@ -1,6 +1,6 @@
 <?php
 
-class Sequence extends ArrayObject {}
+require_once 'generic_search.php';
 
 class Cell
 {
