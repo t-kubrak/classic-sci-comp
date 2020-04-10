@@ -147,7 +147,7 @@ class Maze
 
         foreach ($grid as $rowKey => $row) {
             foreach ($row as $columnKey => $column) {
-                if (random_int(1, 100) < $sparseness) {
+                if (random_int(0, 100) < $sparseness) {
                     $grid[$rowKey][$columnKey] = Cell::BLOCKED;
                 }
             }
