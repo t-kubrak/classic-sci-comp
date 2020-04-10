@@ -28,6 +28,48 @@ class MazeLocation
         $this->row = $row;
         $this->column = $column;
     }
+
+    public function row(): int
+    {
+        return $this->row;
+    }
+
+    public function column(): int
+    {
+        return $this->column;
+    }
+
+    public function upper(): self
+    {
+        $location = clone $this;
+        $location->row += 1;
+
+        return $location;
+    }
+
+    public function lower(): self
+    {
+        $location = clone $this;
+        $location->row -= 1;
+
+        return $location;
+    }
+
+    public function toTheRight(): self
+    {
+        $location = clone $this;
+        $location->column += 1;
+
+        return $location;
+    }
+
+    public function toTheLeft(): self
+    {
+        $location = clone $this;
+        $location->column -= 1;
+
+        return $location;
+    }
 }
 
 class Maze
@@ -127,6 +169,47 @@ class Maze
         }
 
         return $output;
+    }
+
+    public function goalTest(MazeLocation $location): bool
+    {
+        return $location === $this->goal;
+    }
+
+    public function successors(MazeLocation $location): TypedSequence
+    {
+        $locations = TypedSequence::forType(MazeLocation::class);
+
+        $upperLocation = $location->upper();
+        $lowerLocation = $location->lower();
+        $rightLocation = $location->toTheRight();
+        $leftLocation = $location->toTheLeft();
+
+        if ($upperLocation->row() < $this->rows
+            && $this->grid[$upperLocation->row()][$upperLocation->column()] != Cell::BLOCKED
+        ) {
+            $locations->add($upperLocation);
+        }
+
+        if ($lowerLocation->row() >= 0
+            && $this->grid[$lowerLocation->row()][$lowerLocation->column()] != Cell::BLOCKED
+        ) {
+            $locations->add($lowerLocation);
+        }
+
+        if ($rightLocation->row() < $this->columns
+            && $this->grid[$rightLocation->row()][$rightLocation->column()] != Cell::BLOCKED
+        ) {
+            $locations->add($rightLocation);
+        }
+
+        if ($leftLocation->row() < $this->columns
+            && $this->grid[$leftLocation->row()][$leftLocation->column()] != Cell::BLOCKED
+        ) {
+            $locations->add($leftLocation);
+        }
+
+        return $locations;
     }
 }
 
