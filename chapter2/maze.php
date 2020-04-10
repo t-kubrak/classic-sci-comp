@@ -1,5 +1,7 @@
 <?php
 
+class Sequence extends ArrayObject {}
+
 class Cell
 {
     public const EMPTY = ' ';
@@ -82,10 +84,10 @@ class Maze
 
     private function createEmptyGrid(int $rows, int $columns): ArrayObject
     {
-        $grid = new ArrayObject();
+        $grid = new Sequence();
 
         for ($row = 1; $row <= $rows; $row++) {
-            $cellsRow = new ArrayObject();
+            $cellsRow = new Sequence();
 
             for ($column = 1; $column <= $columns; $column++) {
                 $cellsRow[$column] = Cell::EMPTY;
