@@ -114,6 +114,9 @@ class Maze
         $this->start = $start ?? new MazeLocation(0, 0);
         $this->goal = $goal ?? new MazeLocation(9, 9);
         $this->grid = $this->createGrid($rows, $columns, $sparseness);
+
+        $this->grid[$this->start->row()][$this->start->column()] = Cell::START;
+        $this->grid[$this->goal->row()][$this->goal->column()] = Cell::GOAL;
     }
 
     private function createGrid(int $rows, int $columns, int $sparseness): ArrayObject
@@ -227,12 +230,45 @@ class Maze
 
         return $locations;
     }
+
+    /**
+     * @param MazeLocation[] $path
+     */
+    public function mark(array $path): void
+    {
+        foreach ($path as $mazeLocation) {
+            $this->grid[$mazeLocation->row()][$mazeLocation->column()] = Cell::PATH;
+        }
+
+        $this->grid[$this->start->row()][$this->start->column()] = Cell::START;
+        $this->grid[$this->goal->row()][$this->goal->column()] = Cell::GOAL;
+    }
+
+    /**
+     * @param MazeLocation[] $path
+     */
+    public function clear(array $path): void
+    {
+        foreach ($path as $mazeLocation) {
+            $this->grid[$mazeLocation->row()][$mazeLocation->column()] = Cell::EMPTY;
+        }
+
+        $this->grid[$this->start->row()][$this->start->column()] = Cell::START;
+        $this->grid[$this->goal->row()][$this->goal->column()] = Cell::GOAL;
+    }
 }
 
 $maze = new Maze();
 
-echo $maze;
+echo $maze . "\n";
 
-$result = dfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
+$solution1 = dfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
 
-var_dump($result);
+if (!$solution1) {
+    echo "No solution found using depth-first search.";
+} else {
+    $path1 = nodeToPath($solution1);
+    $maze->mark($path1);
+    echo $maze . "\n";
+    $maze->clear($path1);
+}

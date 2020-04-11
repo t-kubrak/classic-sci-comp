@@ -204,6 +204,11 @@ class Node
     {
         return $this->state;
     }
+
+    public function parent(): ?Node
+    {
+        return $this->parent;
+    }
 }
 
 function dfs(object $initial, callable $goalTest, callable $successors): ?Node
@@ -232,5 +237,21 @@ function dfs(object $initial, callable $goalTest, callable $successors): ?Node
     }
 
     return null;
+}
+
+/**
+ * @param Node $node
+ * @return Node[]
+ */
+function nodeToPath(Node $node): array
+{
+    $path = [$node->state()];
+
+    while (!is_null($node->parent())) {
+        $node = $node->parent();
+        $path[] = $node->state();
+    }
+
+    return array_reverse($path);
 }
 
