@@ -128,10 +128,10 @@ class Maze
     {
         $grid = new Sequence();
 
-        for ($row = 1; $row <= $rows; $row++) {
+        for ($row = 0; $row < $rows; $row++) {
             $cellsRow = new Sequence();
 
-            for ($column = 1; $column <= $columns; $column++) {
+            for ($column = 0; $column < $columns; $column++) {
                 $cellsRow[$column] = Cell::EMPTY;
             }
 
@@ -156,6 +156,22 @@ class Maze
         return $grid;
     }
 
+    /**
+     * @return MazeLocation
+     */
+    public function getStart(): MazeLocation
+    {
+        return $this->start;
+    }
+
+    /**
+     * @return MazeLocation
+     */
+    public function getGoal(): MazeLocation
+    {
+        return $this->goal;
+    }
+
     public function __toString(): string
     {
         $output = "";
@@ -173,7 +189,7 @@ class Maze
 
     public function goalTest(MazeLocation $location): bool
     {
-        return $location === $this->goal;
+        return $location == $this->goal;
     }
 
     public function successors(MazeLocation $location): TypedSequence
@@ -197,13 +213,13 @@ class Maze
             $locations->add($lowerLocation);
         }
 
-        if ($rightLocation->row() < $this->columns
+        if ($rightLocation->column() < $this->columns
             && $this->grid[$rightLocation->row()][$rightLocation->column()] != Cell::BLOCKED
         ) {
             $locations->add($rightLocation);
         }
 
-        if ($leftLocation->row() < $this->columns
+        if ($leftLocation->column() >= 0
             && $this->grid[$leftLocation->row()][$leftLocation->column()] != Cell::BLOCKED
         ) {
             $locations->add($leftLocation);
@@ -216,3 +232,7 @@ class Maze
 $maze = new Maze();
 
 echo $maze;
+
+$result = dfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
+
+var_dump($result);
