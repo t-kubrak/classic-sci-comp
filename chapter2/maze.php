@@ -272,3 +272,14 @@ if (!$solution1) {
     echo $maze . "\n";
     $maze->clear($path1);
 }
+
+$solution2 = bfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
+
+if (!$solution2) {
+    echo "No solution found using depth-first search.";
+} else {
+    $path2 = nodeToPath($solution2);
+    $maze->mark($path2);
+    echo $maze . "\n";
+    $maze->clear($path2);
+}

@@ -255,3 +255,56 @@ function nodeToPath(Node $node): array
     return array_reverse($path);
 }
 
+class Queue
+{
+    private array $values;
+
+    public function __construct()
+    {
+
+    }
+
+    public function push($value): void
+    {
+        $this->values[] = $value;
+    }
+
+    public function pop()
+    {
+        return array_shift($this->values);
+    }
+
+    public function isEmpty(): bool
+    {
+        return count($this->values) < 1;
+    }
+}
+
+function bfs(object $initial, callable $goalTest, callable $successors): ?Node
+{
+    $frontier = new Queue();
+    $frontier->push(new Node($initial));
+    $explored = TypedSequence::forType(get_class($initial));
+    $explored->add($initial);
+
+    while (!$frontier->isEmpty()) {
+        $currentNode = $frontier->pop();
+        $currentState = $currentNode->state();
+
+        if ($goalTest($currentState)) {
+            return $currentNode;
+        }
+
+        foreach ($successors($currentState) as $child) {
+            if ($explored->has($child)) {
+                continue;
+            }
+
+            $explored->add($child);
+            $frontier->push(new Node($child, $currentNode));
+        }
+    }
+
+    return null;
+}
+
