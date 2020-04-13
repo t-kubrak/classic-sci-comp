@@ -201,7 +201,7 @@ class Node
 
     public function priority(): int
     {
-        return $this->cost + $this->heuristic;
+        return ($this->cost + $this->heuristic) * -1;
     }
 
     public function cost(): float
