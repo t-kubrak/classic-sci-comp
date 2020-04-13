@@ -258,6 +258,28 @@ class Maze
     }
 }
 
+function euclideanDistance(MazeLocation $goal): callable
+{
+    $distance = function (MazeLocation $ml) use ($goal): float {
+        $xDist = abs($ml->column() - $goal->column());
+        $yDist = abs($ml->row() - $goal->row());
+        return sqrt(($xDist * $xDist) + ($yDist * $yDist));
+    };
+
+    return $distance;
+}
+
+function manhattanDistance(MazeLocation $goal): callable
+{
+    $distance = function (MazeLocation $ml) use ($goal): int {
+        $xDist = abs($ml->column() - $goal->column());
+        $yDist = abs($ml->row() - $goal->row());
+        return $xDist + $yDist;
+    };
+
+    return $distance;
+}
+
 $maze = new Maze();
 
 echo $maze . "\n";
@@ -265,7 +287,7 @@ echo $maze . "\n";
 $solution1 = dfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
 
 if (!$solution1) {
-    echo "No solution found using depth-first search.";
+    echo "No solution found using depth-first search.\n";
 } else {
     $path1 = nodeToPath($solution1);
     $maze->mark($path1);
@@ -276,10 +298,23 @@ if (!$solution1) {
 $solution2 = bfs($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors']);
 
 if (!$solution2) {
-    echo "No solution found using depth-first search.";
+    echo "No solution found using breadth-first search.\n";
 } else {
     $path2 = nodeToPath($solution2);
     $maze->mark($path2);
     echo $maze . "\n";
     $maze->clear($path2);
+}
+
+$distance = manhattanDistance($maze->getGoal());
+
+$solution3 = astar($maze->getStart(), [$maze, 'goalTest'], [$maze, 'successors'], $distance);
+
+if (!$solution3) {
+    echo "No solution found using A*.\n";
+} else {
+    $path3 = nodeToPath($solution3);
+    $maze->mark($path3);
+    echo $maze . "\n";
+    $maze->clear($path3);
 }

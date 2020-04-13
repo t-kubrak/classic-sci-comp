@@ -62,8 +62,10 @@ class TypedSequence extends ArrayObject
      */
     public function validate($value): void
     {
-        if (!$value instanceof $this->type) {
+        if ((is_object($value) && !$value instanceof $this->type)) {
             throw new TypeError("New value is not an instance of type {$this->type}");
+        } elseif (!is_object($value) && $value != $this->type) {
+            throw new TypeError("New value is not of type {$this->type}");
         }
     }
 
@@ -197,6 +199,21 @@ class Node
         return ($this->cost + $this->heuristic) < ($other->cost && $other->heuristic);
     }
 
+    public function priority(): int
+    {
+        return $this->cost + $this->heuristic;
+    }
+
+    public function cost(): float
+    {
+        return $this->cost;
+    }
+
+    public function heuristic(): float
+    {
+        return $this->heuristic;
+    }
+
     /**
      * @return object
      */
@@ -308,3 +325,127 @@ function bfs(object $initial, callable $goalTest, callable $successors): ?Node
     return null;
 }
 
+class PriorityQueue extends \SplPriorityQueue
+{
+    protected $queueOrder = PHP_INT_MAX;
+
+    public function insert($datum, $priority)
+    {
+        if (is_int($priority) || is_float($priority)) {
+            $priority = array($priority, $this->queueOrder--);
+        }
+
+        parent::insert($datum, $priority);
+    }
+}
+
+class Explored
+{
+    /**
+     * @var object
+     */
+    private object $value;
+    /**
+     * @var float
+     */
+    private float $cost;
+
+    public function __construct(object $value, float $cost)
+    {
+        $this->value = $value;
+        $this->cost = $cost;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCost(): float
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @return object
+     */
+    public function getValue(): object
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param float $cost
+     */
+    public function setCost(float $cost): void
+    {
+        $this->cost = $cost;
+    }
+}
+
+class ExploredCollection // TODO: utilize keys
+{
+    /**
+     * @var Explored[]
+     */
+    private array $explored;
+
+    public function add(object $value, float $cost)
+    {
+        $this->explored[] = new Explored($value, $cost);
+    }
+
+    public function get(object $otherValue): ?Explored
+    {
+        foreach ($this->explored as $explored) {
+            if ($explored->getValue() == $otherValue) {
+                return $explored;
+            }
+        }
+
+        return null;
+    }
+
+    public function set(object $otherValue, float $cost): void
+    {
+        foreach ($this->explored as $key => $explored) {
+            if ($explored->getValue() == $otherValue) {
+                $this->explored[$key] = new Explored($otherValue, $cost);
+                return;
+            }
+        }
+
+        $this->add($otherValue, $cost);
+    }
+}
+
+function astar(object $initial, callable $goalTest, callable $successors, callable $heuristic): ?Node
+{
+    $frontier = new SplPriorityQueue();
+    $initialNode = new Node($initial, null, 0.0, $heuristic($initial));
+    $frontier->insert($initialNode, $initialNode->priority());
+    $explored = new ExploredCollection();
+    $explored->add($initial, 0.0);
+
+    while (!$frontier->isEmpty()) {
+        /** @var Node $currentNode */
+        $currentNode = $frontier->extract();
+        $currentState = $currentNode->state();
+
+        if ($goalTest($currentState)) {
+            return $currentNode;
+        }
+
+        $childs = $successors($currentState);
+        foreach ($childs as $child) {
+            $newCost = $currentNode->cost() + 1;
+            $exploredNode = $explored->get($child);
+
+            if (!$exploredNode || $exploredNode->getCost() > $newCost) {
+                $explored->set($child, $newCost);
+                $node = new Node($child, $currentNode, $newCost, $heuristic($child));
+                $frontier->insert($node, $node->priority());
+            }
+        }
+    }
+
+    return null;
+}
