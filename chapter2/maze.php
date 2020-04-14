@@ -1,6 +1,7 @@
 <?php
 
 require_once 'generic_search.php';
+require_once '../data_structures.php';
 
 class Cell
 {
@@ -129,10 +130,10 @@ class Maze
 
     private function createEmptyGrid(int $rows, int $columns): ArrayObject
     {
-        $grid = new Sequence();
+        $grid = new ArrayObject();
 
         for ($row = 0; $row < $rows; $row++) {
-            $cellsRow = new Sequence();
+            $cellsRow = new ArrayObject();
 
             for ($column = 0; $column < $columns; $column++) {
                 $cellsRow[$column] = Cell::EMPTY;

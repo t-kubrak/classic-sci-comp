@@ -1,5 +1,6 @@
 <?php
 include_once "generic_search.php";
+require_once "../data_structures.php";
 
 const MAX_NUM = 3;
 
@@ -40,8 +41,8 @@ class MCState
         $boat = $this->isWestBoat ? 'west' : 'east';
 
         return "On the west bank there are {$this->wm} missionaries and {$this->wc} cannibals.\n"
-                ."On the east bank there are {$this->em} missionaries and {$this->ec} cannibals.\n"
-                ."The boat is on the {$boat} bank.\n";
+            . "On the east bank there are {$this->em} missionaries and {$this->ec} cannibals.\n"
+            . "The boat is on the {$boat} bank.\n";
     }
 
     public function isLegal()
@@ -164,13 +165,13 @@ function displaySolution(array $path): void
     foreach ($path as $currentState) {
         if ($currentState->isWestBoat()) {
             printf("%d missionaries and %d cannibals moved from the east bank to the west bank.\n\n",
-                    $oldState->em() - $currentState->em(),
-                    $oldState->ec() - $currentState->ec()
+                $oldState->em() - $currentState->em(),
+                $oldState->ec() - $currentState->ec()
             );
         } else {
             printf("%d missionaries and %d cannibals moved from the west bank to the east bank.\n\n",
-                    $oldState->wm() - $currentState->wm(),
-                    $oldState->wc() - $currentState->wc()
+                $oldState->wm() - $currentState->wm(),
+                $oldState->wc() - $currentState->wc()
             );
         }
 

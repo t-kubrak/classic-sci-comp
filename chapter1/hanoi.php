@@ -1,9 +1,6 @@
 <?php
 
-class Stack extends SplStack
-{
-
-}
+require_once "../data_structures.php";
 
 $numOfDiscs = 4;
 $towerA = new Stack();
