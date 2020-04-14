@@ -163,9 +163,9 @@ function binary_contains(ArrayObject $sequence, $key): bool
     return false;
 }
 
-var_dump(linear_contains(new ArrayObject([1, 5, 15, 15, 15, 20]), 5));
-var_dump(binary_contains(new ArrayObject(['a', 'd', 'e', 'f', 'z']), 'f'));
-var_dump(binary_contains(new ArrayObject(['john', 'mark', 'ronald', 'sarah']), 'sheila'));
+//var_dump(linear_contains(new ArrayObject([1, 5, 15, 15, 15, 20]), 5));
+//var_dump(binary_contains(new ArrayObject(['a', 'd', 'e', 'f', 'z']), 'f'));
+//var_dump(binary_contains(new ArrayObject(['john', 'mark', 'ronald', 'sarah']), 'sheila'));
 
 class Node
 {
@@ -434,8 +434,7 @@ function astar(object $initial, callable $goalTest, callable $successors, callab
             return $currentNode;
         }
 
-        $childs = $successors($currentState);
-        foreach ($childs as $child) {
+        foreach ($successors($currentState) as $child) {
             $newCost = $currentNode->cost() + 1;
             $exploredNode = $explored->get($child);
 
