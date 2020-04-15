@@ -1,5 +1,21 @@
 <?php
 
+class Sequence extends ArrayObject
+{
+    protected array $input = [];
+
+    public function __construct($input = array(), $flags = 0, $iterator_class = "ArrayIterator")
+    {
+        parent::__construct($input, $flags, $iterator_class);
+        $this->input = $input;
+    }
+
+    public function toArray(): array
+    {
+        return $this->input;
+    }
+}
+
 class TypedSequence extends ArrayObject
 {
     protected string $type;
@@ -102,6 +118,78 @@ class TypedSequence extends ArrayObject
         }
 
         return false;
+    }
+}
+
+class Map implements ArrayAccess, Countable
+{
+    protected string $type;
+    protected array $values = [];
+    protected $default;
+
+    public static function forType(string $type, $default = null): self
+    {
+        $list = new static();
+        $list->type = $type;
+        $list->default = $default;
+        return $list;
+    }
+
+    private function __construct()
+    {
+    }
+
+    /**
+     * @param $value
+     */
+    private function validate($value): void
+    {
+        if ((is_object($value) && !$value instanceof $this->type)) {
+            throw new TypeError("New value is not an instance of type {$this->type}");
+        } elseif (!is_object($value) && $value != $this->type) {
+            throw new TypeError("New value is not of type {$this->type}");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetExists($offset): bool
+    {
+        return isset($this->values[$offset]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetGet($offset)
+    {
+        return $this->values[$offset] ?? $this->default;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value): void
+    {
+        $this->validate($value);
+        $this->values[$offset] = $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetUnset($offset): void
+    {
+        unset($this->values[$offset]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return count($this->values);
     }
 }
 
