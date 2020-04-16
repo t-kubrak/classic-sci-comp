@@ -14,6 +14,17 @@ class Sequence extends ArrayObject
     {
         return $this->input;
     }
+
+    public function has($otherValue): bool
+    {
+        foreach ($this->input as $value) {
+            if ($value == $otherValue) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 class TypedSequence extends ArrayObject
@@ -123,32 +134,12 @@ class TypedSequence extends ArrayObject
 
 class Map implements ArrayAccess, Countable
 {
-    protected string $type;
     protected array $values = [];
     protected $default;
 
-    public static function forType(string $type, $default = null): self
+    public function __construct($default = null)
     {
-        $list = new static();
-        $list->type = $type;
-        $list->default = $default;
-        return $list;
-    }
-
-    private function __construct()
-    {
-    }
-
-    /**
-     * @param $value
-     */
-    private function validate($value): void
-    {
-        if ((is_object($value) && !$value instanceof $this->type)) {
-            throw new TypeError("New value is not an instance of type {$this->type}");
-        } elseif (!is_object($value) && $value != $this->type) {
-            throw new TypeError("New value is not of type {$this->type}");
-        }
+        $this->default = $default;
     }
 
     /**
@@ -172,7 +163,6 @@ class Map implements ArrayAccess, Countable
      */
     public function offsetSet($offset, $value): void
     {
-        $this->validate($value);
         $this->values[$offset] = $value;
     }
 
@@ -190,6 +180,47 @@ class Map implements ArrayAccess, Countable
     public function count(): int
     {
         return count($this->values);
+    }
+}
+
+class TypedMap extends Map
+{
+    protected string $type;
+    protected array $values = [];
+    protected $default;
+
+    public static function forType(string $type, $default = null): self
+    {
+        $list = new static();
+        $list->type = $type;
+        $list->default = $default;
+        return $list;
+    }
+
+    private function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * @param $value
+     */
+    private function validate($value): void
+    {
+        if ((is_object($value) && !$value instanceof $this->type)) {
+            throw new TypeError("New value is not an instance of type {$this->type}");
+        } elseif (!is_object($value) && gettype($value) != $this->type) {
+            throw new TypeError("New value is not of type {$this->type}");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value): void
+    {
+        $this->validate($value);
+        $this->values[$offset] = $value;
     }
 }
 
