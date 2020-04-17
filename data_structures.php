@@ -64,7 +64,7 @@ class TypedSequence extends ArrayObject
     {
         if ((is_object($value) && !$value instanceof $this->type)) {
             throw new TypeError("New value is not an instance of type {$this->type}");
-        } elseif (!is_object($value) && $value != $this->type) {
+        } elseif (!is_object($value) && gettype($value) != $this->type) {
             throw new TypeError("New value is not of type {$this->type}");
         }
     }
