@@ -132,7 +132,7 @@ class TypedSequence extends ArrayObject
     }
 }
 
-class Map implements ArrayAccess, Countable
+class Map implements ArrayAccess, Countable, IteratorAggregate
 {
     protected array $values = [];
     protected $default;
@@ -180,6 +180,25 @@ class Map implements ArrayAccess, Countable
     public function count(): int
     {
         return count($this->values);
+    }
+
+    public function has($otherValue): bool
+    {
+        foreach ($this->values as $value) {
+            if ($value == $otherValue) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->values);
     }
 }
 
