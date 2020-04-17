@@ -19,6 +19,22 @@ class GridLocation
         $this->row = $row;
         $this->column = $column;
     }
+
+    /**
+     * @return int
+     */
+    public function getRow(): int
+    {
+        return $this->row;
+    }
+
+    /**
+     * @return int
+     */
+    public function getColumn(): int
+    {
+        return $this->column;
+    }
 }
 
 function generateGrid(int $rows, int $columns): array
@@ -38,7 +54,7 @@ function generateGrid(int $rows, int $columns): array
 function displayGrid(array $grid): void
 {
     foreach ($grid as $row) {
-        echo implode("", $row);
+        echo implode("", $row)."\n";
     }
 }
 
@@ -93,4 +109,66 @@ function generateDomain(string $word, array $grid)
     }
 
     return $domain;
+}
+
+class WordSearchConstraint extends Constraint
+{
+    /**
+     * @var ArrayObject
+     */
+    private ArrayObject $words;
+
+    public function __construct(ArrayObject $words)
+    {
+        parent::__construct($words);
+
+        $this->words = $words;
+    }
+
+    public function satisfied(Map $assignment): bool
+    {
+        $allLocations = [];
+
+        foreach ($assignment->getIterator() as $values) {
+            foreach ($values as $location) {
+                $allLocations[] = $location;
+            }
+        }
+
+        $set = new \Ds\Set($allLocations);
+
+        return $set->count() == count($allLocations);
+    }
+}
+
+$grid = generateGrid(9, 9);
+$words = new Sequence(["MATTHEW", "JOE", "MARY", "SARAH", "SALLY"]);
+$locations = TypedMap::forType(TypedSequence::class);
+
+foreach ($words as $word) {
+    $locations[$word] = generateDomain($word, $grid);
+}
+
+$csp = new CSP($words, $locations);
+$csp->addConstraint(new WordSearchConstraint($words));
+
+$solution = $csp->backtrackingSearch();
+if (!$solution) {
+    echo "No solution found.";
+} else {
+    /** @var GridLocation[]  $gridLocations */
+    foreach ($solution as $word => $gridLocations) {
+        if (rand(0, 1)) {
+            $gridLocations = array_reverse($gridLocations);
+        }
+
+
+        foreach (str_split($word) as $index => $letter) {
+            $row = $gridLocations[$index]->getRow();
+            $column = $gridLocations[$index]->getColumn();
+            $grid[$row][$column] = $letter;
+        }
+
+        displayGrid($grid);
+    }
 }
