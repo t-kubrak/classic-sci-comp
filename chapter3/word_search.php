@@ -42,8 +42,8 @@ function generateGrid(int $rows, int $columns): array
     $characters = range('A', 'Z');
     $grid = [];
 
-    foreach (range(0, $rows) as $row) {
-        foreach (range(0, $columns) as $column) {
+    foreach (range(0, $rows - 1) as $row) {
+        foreach (range(0, $columns - 1) as $column) {
             $grid[$row][$column] = $characters[array_rand($characters)];
         }
     }
@@ -65,10 +65,10 @@ function generateDomain(string $word, array $grid)
     $width = count($grid[0]);
     $length = strlen($word);
 
-    foreach (range(0, $height) as $row) {
-        foreach (range(0, $width) as $col) {
-            $columns = range($col, $col + $length + 1);
-            $rows = range($row, $row + $length + 1);
+    foreach (range(0, $height - 1) as $row) {
+        foreach (range(0, $width - 1) as $col) {
+            $columns = range($col, $col + $length);
+            $rows = range($row, $row + $length);
 
             if ($col + $length <= $width) {
                 /** left to right */
