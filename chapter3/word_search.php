@@ -3,7 +3,7 @@
 require_once "csp.php";
 require_once "../data_structures.php";
 
-class GridLocation
+class GridLocation implements \Ds\Hashable
 {
     /**
      * @var int
@@ -34,6 +34,23 @@ class GridLocation
     public function getColumn(): int
     {
         return $this->column;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function hash()
+    {
+        return $this->row . $this->column;
+    }
+
+    /**
+     * @inheritDoc
+     * @var GridLocation $otherLocation
+     */
+    function equals($otherLocation): bool
+    {
+        return $this->hash() == $otherLocation->hash();
     }
 }
 
@@ -67,8 +84,8 @@ function generateDomain(string $word, array $grid)
 
     foreach (range(0, $height - 1) as $row) {
         foreach (range(0, $width - 1) as $col) {
-            $columns = range($col, $col + $length);
-            $rows = range($row, $row + $length);
+            $columns = range($col, $col + $length - 1);
+            $rows = range($row, $row + $length - 1);
 
             if ($col + $length <= $width) {
                 /** left to right */
@@ -153,6 +170,7 @@ $csp = new CSP($words, $locations);
 $csp->addConstraint(new WordSearchConstraint($words));
 
 $solution = $csp->backtrackingSearch();
+
 if (!$solution) {
     echo "No solution found.";
 } else {
@@ -168,7 +186,7 @@ if (!$solution) {
             $column = $gridLocations[$index]->getColumn();
             $grid[$row][$column] = $letter;
         }
-
-        displayGrid($grid);
     }
+
+    displayGrid($grid);
 }
