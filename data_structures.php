@@ -130,6 +130,17 @@ class TypedSequence extends ArrayObject
 
         return false;
     }
+
+    public function index($otherValue)
+    {
+        foreach ($this->values as $key => $value) {
+            if ($value == $otherValue) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
 }
 
 class Map implements ArrayAccess, Countable, IteratorAggregate
