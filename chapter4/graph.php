@@ -98,22 +98,22 @@ class Graph
     /**
      * Find the vertices that a vertex at some index is connected to
      */
-    public function neighborsForIndex(int $index): ArrayObject
+    public function neighborsForIndex(int $index): Sequence
     {
-        $vertices = new ArrayObject();
+        $vertices = [];
 
         /** @var Edge $edge */
         foreach ($this->edges[$index] as $edge) {
-            $vertices->append($edge->getV());
+            $vertices[] = $this->vertexAt($edge->getV());
         }
 
-        return $vertices;
+        return new Sequence($vertices);
     }
 
     /**
      * Lookup a vertice's index and find its neighbors
      */
-    public function neighborsForVertex($vertex)
+    public function neighborsForVertex($vertex): Sequence
     {
         return $this->neighborsForIndex($this->indexOf($vertex));
     }
@@ -133,9 +133,52 @@ class Graph
         $desc = "";
 
         foreach (range(0, $this->vertices->count() - 1) as $index) {
-            $desc .= "{$this->vertexAt($index)} -> {$this->neighborsForIndex($index)}\n";
+            $pieces = $this->neighborsForIndex($index)->toArray();
+            $neighbors = implode(", ", $pieces);
+            $desc .= "{$this->vertexAt($index)} -> [{$neighbors}]\n";
         }
 
         return $desc;
     }
 }
+
+$cities = [
+    "Seattle", "San Francisco", "Los Angeles", "Riverside", "Phoenix", "Chicago", "Boston", "New York",
+    "Atlanta", "Miami", "Dallas", "Houston", "Detroit", "Philadelphia", "Washington"
+];
+$vertices = TypedSequence::forType('string');
+
+foreach ($cities as $city) {
+    $vertices->add($city);
+}
+
+$graph = new Graph($vertices);
+
+$graph->addEdgeByVertices("Seattle", "Chicago");
+$graph->addEdgeByVertices("Seattle", "San Francisco");
+$graph->addEdgeByVertices("San Francisco", "Riverside");
+$graph->addEdgeByVertices("San Francisco", "Los Angeles");
+$graph->addEdgeByVertices("Los Angeles", "Riverside");
+$graph->addEdgeByVertices("Los Angeles", "Phoenix");
+$graph->addEdgeByVertices("Riverside", "Phoenix");
+$graph->addEdgeByVertices("Riverside", "Chicago");
+$graph->addEdgeByVertices("Phoenix", "Dallas");
+$graph->addEdgeByVertices("Phoenix", "Houston");
+$graph->addEdgeByVertices("Dallas", "Chicago");
+$graph->addEdgeByVertices("Dallas", "Atlanta");
+$graph->addEdgeByVertices("Dallas", "Houston");
+$graph->addEdgeByVertices("Houston", "Atlanta");
+$graph->addEdgeByVertices("Houston", "Miami");
+$graph->addEdgeByVertices("Atlanta", "Chicago");
+$graph->addEdgeByVertices("Atlanta", "Washington");
+$graph->addEdgeByVertices("Atlanta", "Miami");
+$graph->addEdgeByVertices("Miami", "Washington");
+$graph->addEdgeByVertices("Chicago", "Detroit");
+$graph->addEdgeByVertices("Detroit", "Boston");
+$graph->addEdgeByVertices("Detroit", "Washington");
+$graph->addEdgeByVertices("Detroit", "New York");
+$graph->addEdgeByVertices("Boston", "New York");
+$graph->addEdgeByVertices("New York", "Philadelphia");
+$graph->addEdgeByVertices("Philadelphia", "Washington");
+
+echo $graph;
