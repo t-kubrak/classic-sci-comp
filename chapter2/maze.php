@@ -208,25 +208,25 @@ class Maze
         if ($upperLocation->row() < $this->rows
             && $this->grid[$upperLocation->row()][$upperLocation->column()] != Cell::BLOCKED
         ) {
-            $locations->add($upperLocation);
+            $locations->append($upperLocation);
         }
 
         if ($lowerLocation->row() >= 0
             && $this->grid[$lowerLocation->row()][$lowerLocation->column()] != Cell::BLOCKED
         ) {
-            $locations->add($lowerLocation);
+            $locations->append($lowerLocation);
         }
 
         if ($rightLocation->column() < $this->columns
             && $this->grid[$rightLocation->row()][$rightLocation->column()] != Cell::BLOCKED
         ) {
-            $locations->add($rightLocation);
+            $locations->append($rightLocation);
         }
 
         if ($leftLocation->column() >= 0
             && $this->grid[$leftLocation->row()][$leftLocation->column()] != Cell::BLOCKED
         ) {
-            $locations->add($leftLocation);
+            $locations->append($leftLocation);
         }
 
         return $locations;

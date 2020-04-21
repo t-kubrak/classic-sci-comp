@@ -5,12 +5,9 @@ require_once "../data_structures.php";
 
 class SendMoreMoneyConstraint extends Constraint
 {
-    /**
-     * @var ArrayObject
-     */
-    private ArrayObject $letters;
+    private Sequence $letters;
 
-    public function __construct(ArrayObject $letters)
+    public function __construct(Sequence $letters)
     {
         parent::__construct($letters);
 

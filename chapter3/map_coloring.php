@@ -16,7 +16,7 @@ class MapColoringConstraint extends Constraint
 
     public function __construct(string $place1, string $place2)
     {
-        parent::__construct(new ArrayObject([$place1, $place2]));
+        parent::__construct(new Sequence([$place1, $place2]));
         $this->place1 = $place1;
         $this->place2 = $place2;
     }

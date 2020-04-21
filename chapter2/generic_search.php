@@ -33,9 +33,9 @@ function binary_contains(ArrayObject $sequence, $key): bool
     return false;
 }
 
-//var_dump(linear_contains(new ArrayObject([1, 5, 15, 15, 15, 20]), 5));
-//var_dump(binary_contains(new ArrayObject(['a', 'd', 'e', 'f', 'z']), 'f'));
-//var_dump(binary_contains(new ArrayObject(['john', 'mark', 'ronald', 'sarah']), 'sheila'));
+var_dump(linear_contains(new ArrayObject([1, 5, 15, 15, 15, 20]), 5));
+var_dump(binary_contains(new ArrayObject(['a', 'd', 'e', 'f', 'z']), 'f'));
+var_dump(binary_contains(new ArrayObject(['john', 'mark', 'ronald', 'sarah']), 'sheila'));
 
 class Node
 {
@@ -103,7 +103,7 @@ function dfs(object $initial, callable $goalTest, callable $successors): ?Node
     $frontier = new Stack();
     $frontier->push(new Node($initial));
     $explored = TypedSequence::forType(get_class($initial));
-    $explored->add($initial);
+    $explored->append($initial);
 
     while (!$frontier->isEmpty()) {
         $currentNode = $frontier->pop();
@@ -118,7 +118,7 @@ function dfs(object $initial, callable $goalTest, callable $successors): ?Node
                 continue;
             }
 
-            $explored->add($child);
+            $explored->append($child);
             $frontier->push(new Node($child, $currentNode));
         }
     }
@@ -148,7 +148,7 @@ function bfs($initial, callable $goalTest, callable $successors): ?Node
     $frontier->push(new Node($initial));
     $stateType = is_object($initial) ? get_class($initial) : gettype($initial);
     $explored = TypedSequence::forType($stateType);
-    $explored->add($initial);
+    $explored->append($initial);
 
     while (!$frontier->isEmpty()) {
         $currentNode = $frontier->pop();
@@ -163,7 +163,7 @@ function bfs($initial, callable $goalTest, callable $successors): ?Node
                 continue;
             }
 
-            $explored->add($child);
+            $explored->append($child);
             $frontier->push(new Node($child, $currentNode));
         }
     }

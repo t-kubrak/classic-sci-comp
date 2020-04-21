@@ -130,12 +130,9 @@ function generateDomain(string $word, array $grid)
 
 class WordSearchConstraint extends Constraint
 {
-    /**
-     * @var ArrayObject
-     */
-    private ArrayObject $words;
+    private Sequence $words;
 
-    public function __construct(ArrayObject $words)
+    public function __construct(Sequence $words)
     {
         parent::__construct($words);
 

@@ -1,111 +1,6 @@
 <?php
 
-class TypedList extends ArrayObject
-{
-    protected string $type;
-    protected array $values = [];
-
-    public static function forType(string $type): self
-    {
-        $list = new static();
-        $list->type = $type;
-        return $list;
-    }
-
-    protected function __construct()
-    {
-        parent::__construct();
-    }
-
-    public function getIterator(): ArrayIterator
-    {
-        return new ArrayIterator($this->values);
-    }
-
-    public function add($value): self
-    {
-        $this->validate($value);
-
-        $this->values[] = $value;
-        return $this;
-    }
-
-    /**
-     * @param $value
-     */
-    public function validate($value): void
-    {
-        if (!$value instanceof $this->type) {
-            throw new TypeError("New value is not an instance of type {$this->type}");
-        }
-    }
-
-    public function isEqualTo(TypedList $otherList): bool
-    {
-        if ($this->count() != $otherList->count()) {
-            return false;
-        }
-
-        foreach ($this->values as $key => $value) {
-            if ($value != $otherList[$key]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count(): int
-    {
-        return count($this->values);
-    }
-
-    public function sort(): bool
-    {
-        return sort($this->values);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->values[$offset]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetGet($offset)
-    {
-        return $this->values[$offset] ?? null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetSet($offset, $value): void
-    {
-        $this->validate($value);
-
-        if (is_null($offset)) {
-            $this->values[] = $value;
-        } else {
-            $this->values[$offset] = $value;
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->values[$offset]);
-    }
-}
+require_once "../data_structures.php";
 
 class Nucleotide
 {
@@ -143,11 +38,11 @@ class Nucleotide
     }
 }
 
-class Codon extends TypedList
+class Codon extends TypedSequence
 {
 }
 
-class Gene extends TypedList
+class Gene extends TypedSequence
 {
 }
 
@@ -163,11 +58,11 @@ function string_to_gene(string $geneString): Gene
         }
 
         $codon = Codon::forType(Nucleotide::class)
-            ->add(Nucleotide::fromString($geneChars[$i]))
-            ->add(Nucleotide::fromString($geneChars[$i + 1]))
-            ->add(Nucleotide::fromString($geneChars[$i + 2]));
+            ->append(Nucleotide::fromString($geneChars[$i]))
+            ->append(Nucleotide::fromString($geneChars[$i + 1]))
+            ->append(Nucleotide::fromString($geneChars[$i + 2]));
 
-        $gene->add($codon);
+        $gene->append($codon);
     }
 
     return $gene;
@@ -190,14 +85,14 @@ function linear_contains(Gene $gene, Codon $codon): bool
 }
 
 $codonAcg = Codon::forType(Nucleotide::class)
-    ->add(Nucleotide::fromString(Nucleotide::A))
-    ->add(Nucleotide::fromString(Nucleotide::C))
-    ->add(Nucleotide::fromString(Nucleotide::G));
+    ->append(Nucleotide::fromString(Nucleotide::A))
+    ->append(Nucleotide::fromString(Nucleotide::C))
+    ->append(Nucleotide::fromString(Nucleotide::G));
 
 $codonGat = Codon::forType(Nucleotide::class)
-    ->add(Nucleotide::fromString(Nucleotide::G))
-    ->add(Nucleotide::fromString(Nucleotide::A))
-    ->add(Nucleotide::fromString(Nucleotide::T));
+    ->append(Nucleotide::fromString(Nucleotide::G))
+    ->append(Nucleotide::fromString(Nucleotide::A))
+    ->append(Nucleotide::fromString(Nucleotide::T));
 
 var_dump(linear_contains($gene, $codonAcg));
 var_dump(linear_contains($gene, $codonGat));

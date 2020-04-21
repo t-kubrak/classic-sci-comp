@@ -4,16 +4,16 @@ require_once "../data_structures.php";
 
 abstract class Constraint
 {
-    protected ArrayObject $variables;
+    protected Sequence $variables;
 
-    public function __construct(ArrayObject $variables)
+    public function __construct(Sequence $variables)
     {
         $this->variables = $variables;
     }
 
     abstract public function satisfied(Map $assignment): bool;
 
-    public function getVariables(): ArrayObject
+    public function getVariables(): Sequence
     {
         return $this->variables;
     }

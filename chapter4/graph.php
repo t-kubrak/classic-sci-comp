@@ -54,8 +54,8 @@ class Graph
      */
     public function addVertex($vertex): int
     {
-        $this->vertices->add($vertex);
-        $this->edges->add(TypedList::forType(Edge::class));
+        $this->vertices->append($vertex);
+        $this->edges->append(TypedList::forType(Edge::class));
 
         return $this->vertices->count() - 1;
     }
@@ -66,8 +66,8 @@ class Graph
      */
     public function addEdge(Edge $edge): void
     {
-        $this->edges[$edge->getU()]->add($edge);
-        $this->edges[$edge->getV()]->add($edge->reversed());
+        $this->edges[$edge->getU()]->append($edge);
+        $this->edges[$edge->getV()]->append($edge->reversed());
     }
 
     public function addEdgeByIndices(int $u, int $v): void
@@ -150,7 +150,7 @@ $cities = [
 $vertices = TypedSequence::forType('string');
 
 foreach ($cities as $city) {
-    $vertices->add($city);
+    $vertices->append($city);
 }
 
 $graph = new Graph($vertices);

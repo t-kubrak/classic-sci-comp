@@ -5,11 +5,12 @@ require_once "../data_structures.php";
 
 class QueenConstraint extends Constraint
 {
-    private ArrayObject $columns;
+    private Sequence $columns;
 
-    public function __construct(ArrayObject $columns)
+    public function __construct(Sequence $columns)
     {
         parent::__construct($columns);
+
         $this->columns = $columns;
     }
 

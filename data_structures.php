@@ -1,47 +1,12 @@
 <?php
 
-class Sequence extends ArrayObject
+class Sequence implements ArrayAccess, Countable, IteratorAggregate
 {
-    protected array $input = [];
+    protected array $values;
 
-    public function __construct($input = array(), $flags = 0, $iterator_class = "ArrayIterator")
+    public function __construct($values = [])
     {
-        parent::__construct($input, $flags, $iterator_class);
-        $this->input = $input;
-    }
-
-    public function toArray(): array
-    {
-        return $this->input;
-    }
-
-    public function has($otherValue): bool
-    {
-        foreach ($this->input as $value) {
-            if ($value == $otherValue) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
-
-class TypedSequence extends ArrayObject
-{
-    protected string $type;
-    protected array $values = [];
-
-    public static function forType(string $type): self
-    {
-        $list = new static();
-        $list->type = $type;
-        return $list;
-    }
-
-    protected function __construct()
-    {
-        parent::__construct();
+        $this->values = $values;
     }
 
     public function getIterator(): ArrayIterator
@@ -49,24 +14,10 @@ class TypedSequence extends ArrayObject
         return new ArrayIterator($this->values);
     }
 
-    public function add($value): self
+    public function append($value): self
     {
-        $this->validate($value);
-
         $this->values[] = $value;
         return $this;
-    }
-
-    /**
-     * @param $value
-     */
-    public function validate($value): void
-    {
-        if ((is_object($value) && !$value instanceof $this->type)) {
-            throw new TypeError("New value is not an instance of type {$this->type}");
-        } elseif (!is_object($value) && gettype($value) != $this->type) {
-            throw new TypeError("New value is not of type {$this->type}");
-        }
     }
 
     /**
@@ -103,8 +54,6 @@ class TypedSequence extends ArrayObject
      */
     public function offsetSet($offset, $value): void
     {
-        $this->validate($value);
-
         if (is_null($offset)) {
             $this->values[] = $value;
         } else {
@@ -140,6 +89,61 @@ class TypedSequence extends ArrayObject
         }
 
         return null;
+    }
+
+    public function toArray(): array
+    {
+        return $this->values;
+    }
+}
+
+class TypedSequence extends Sequence
+{
+    protected string $type;
+
+    public static function forType(string $type): self
+    {
+        $list = new static();
+        $list->type = $type;
+        return $list;
+    }
+
+    protected function __construct()
+    {
+    }
+
+    public function append($value): self
+    {
+        $this->validate($value);
+
+        $this->values[] = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     */
+    public function validate($value): void
+    {
+        if ((is_object($value) && !$value instanceof $this->type)) {
+            throw new TypeError("New value is not an instance of type {$this->type}");
+        } elseif (!is_object($value) && gettype($value) != $this->type) {
+            throw new TypeError("New value is not of type {$this->type}");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value): void
+    {
+        $this->validate($value);
+
+        if (is_null($offset)) {
+            $this->values[] = $value;
+        } else {
+            $this->values[$offset] = $value;
+        }
     }
 }
 
