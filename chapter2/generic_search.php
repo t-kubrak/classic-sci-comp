@@ -40,9 +40,9 @@ function binary_contains(ArrayObject $sequence, $key): bool
 class Node
 {
     /**
-     * @var object
+     * @var mixed
      */
-    private object $state;
+    private $state;
     /**
      * @var Node
      */
@@ -56,7 +56,7 @@ class Node
      */
     private float $heuristic;
 
-    public function __construct(object $state, Node $parent = null, float $cost = 0.0, float $heuristic = 0.0)
+    public function __construct($state, Node $parent = null, float $cost = 0.0, float $heuristic = 0.0)
     {
         $this->state = $state;
         $this->parent = $parent;
@@ -85,9 +85,9 @@ class Node
     }
 
     /**
-     * @return object
+     * @return mixed
      */
-    public function state(): object
+    public function state()
     {
         return $this->state;
     }
@@ -142,11 +142,12 @@ function nodeToPath(Node $node): array
     return array_reverse($path);
 }
 
-function bfs(object $initial, callable $goalTest, callable $successors): ?Node
+function bfs($initial, callable $goalTest, callable $successors): ?Node
 {
     $frontier = new Queue();
     $frontier->push(new Node($initial));
-    $explored = TypedSequence::forType(get_class($initial));
+    $stateType = is_object($initial) ? get_class($initial) : gettype($initial);
+    $explored = TypedSequence::forType($stateType);
     $explored->add($initial);
 
     while (!$frontier->isEmpty()) {

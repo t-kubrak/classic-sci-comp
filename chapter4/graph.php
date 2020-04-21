@@ -2,6 +2,7 @@
 
 require_once "edge.php";
 require_once "../data_structures.php";
+require_once "../chapter2/generic_search.php";
 
 class Graph
 {
@@ -182,3 +183,18 @@ $graph->addEdgeByVertices("New York", "Philadelphia");
 $graph->addEdgeByVertices("Philadelphia", "Washington");
 
 echo $graph;
+
+$bfsResult = bfs(
+    "Boston",
+    function ($city) {
+        return $city == "Miami";
+    },
+    [$graph, 'neighborsForVertex']
+);
+
+if (!$bfsResult) {
+    echo "No solution found using breadth-first search.";
+} else {
+    $path = nodeToPath($bfsResult);
+    echo "\nPath from Boston to Miami:\n" . implode(", ", $path);
+}
