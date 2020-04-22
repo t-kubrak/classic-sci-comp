@@ -215,6 +215,11 @@ class Map implements ArrayAccess, Countable, IteratorAggregate
     {
         return new ArrayIterator($this->values);
     }
+
+    public function toArray(): array
+    {
+        return $this->values;
+    }
 }
 
 class TypedMap extends Map

@@ -9,24 +9,30 @@ class Graph
     /**
      * @var TypedSequence
      */
-    private TypedSequence $vertices;
+    protected TypedSequence $vertices;
     /**
      * @var TypedSequence
      */
-    private TypedSequence $edges;
+    protected TypedSequence $edges;
+    /**
+     * @var string
+     */
+    protected string $edgeType;
 
-    public function __construct(TypedSequence $vertices)
+    public function __construct(TypedSequence $vertices, string $edgeType = null)
     {
         $this->vertices = $vertices;
-        $this->edges = $this->edgesFrom($vertices);
+
+        $edgeType = $edgeType ?? Edge::class;
+        $this->edges = $this->edgesFrom($vertices, $edgeType);
     }
 
-    private function edgesFrom(TypedSequence $vertices): TypedSequence
+    private function edgesFrom(TypedSequence $vertices, string $edgeType): TypedSequence
     {
         $edges = TypedSequence::forType(TypedSequence::class);
 
         foreach ($vertices as $vertex) {
-            $edges->append(TypedSequence::forType(Edge::class));
+            $edges->append(TypedSequence::forType($edgeType));
         }
 
         return $edges;

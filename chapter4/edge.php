@@ -3,10 +3,10 @@
 class Edge
 {
     /** from */
-    private int $u;
+    protected int $u;
 
     /** to */
-    private int $v;
+    protected int $v;
 
     public function __construct(int $u, int $v)
     {
