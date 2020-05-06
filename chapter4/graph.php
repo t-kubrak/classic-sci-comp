@@ -38,7 +38,7 @@ class Graph
         return $edges;
     }
 
-    public function vertedCount(): int
+    public function vertexCount(): int
     {
         return $this->vertices->count();
     }
