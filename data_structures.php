@@ -95,6 +95,11 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
     {
         return $this->values;
     }
+
+    public function reversed()
+    {
+        return new self(array_reverse($this->values));
+    }
 }
 
 class TypedSequence extends Sequence
@@ -144,6 +149,14 @@ class TypedSequence extends Sequence
         } else {
             $this->values[$offset] = $value;
         }
+    }
+
+    public function reversed(): self
+    {
+        $self = clone $this;
+        $self->values = array_reverse($self->values);
+
+        return $self;
     }
 }
 
