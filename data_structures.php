@@ -20,12 +20,29 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
+    public function merge(array $values): self
+    {
+        $this->values = array_merge($this->values, $values);
+        return $this;
+    }
+
     /**
      * @inheritDoc
      */
     public function count(): int
     {
         return count($this->values);
+    }
+
+    public function pop()
+    {
+        $lastKey = $this->count() - 1;
+
+        $lastValue = $this->values[$lastKey];
+
+        unset($this->values[$lastKey]);
+
+        return $lastValue;
     }
 
     public function sort(): bool
