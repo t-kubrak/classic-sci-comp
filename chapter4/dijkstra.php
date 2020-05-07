@@ -34,17 +34,21 @@ function dijkstra(WeightedGraph $wg, $root): array
     while (!$pq->isEmpty()) {
         $node = $pq->pop();
         /** @var DijkstraNode $node */
-        $u = $node->getVertex();
-        $distU = $distances[$u];
+        $currentVertex = $node->getVertex();
+        $distanceToCurrentVertex = $distances[$currentVertex];
 
         /** @var WeightedEdge $we */
-        foreach ($wg->edgesForIndex($u) as $we) {
-            $distV = $distances[$we->getV()];
+        foreach ($wg->edgesForIndex($currentVertex) as $we) {
+            $distanceToNeighbourVertex = $distances[$we->getV()];
+            $newDistanceToNeighbourVertex = $we->getWeight() + $distanceToCurrentVertex;
 
-            if (is_null($distV) || $distV > $we->getWeight() + $distU) {
-                $distances[$we->getV()] = $we->getWeight() + $distU;
+            if (is_null($distanceToNeighbourVertex) || $distanceToNeighbourVertex > $newDistanceToNeighbourVertex) {
+                $distances[$we->getV()] = $newDistanceToNeighbourVertex;
                 $path[$we->getV()] = $we;
-                $pq->push(new DijkstraNode($we->getV(), $we->getWeight() + $distU), ($we->getWeight() + $distU) * -1);
+                $pq->push(
+                    new DijkstraNode($we->getV(), $newDistanceToNeighbourVertex),
+                    $newDistanceToNeighbourVertex * -1
+                );
             }
         }
     }
