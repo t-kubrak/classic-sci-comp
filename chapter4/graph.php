@@ -61,7 +61,7 @@ class Graph
     public function addVertex($vertex): int
     {
         $this->vertices->append($vertex);
-        $this->edges->append(TypedList::forType(Edge::class));
+        $this->edges->append(TypedSequence::forType(Edge::class));
 
         return $this->vertices->count() - 1;
     }
