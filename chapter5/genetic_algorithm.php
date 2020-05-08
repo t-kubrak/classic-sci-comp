@@ -126,7 +126,7 @@ class GeneticAlgorithm
      * Run the genetic algorithm for max_generations iterations
      * and return the best individual found
      */
-    public function run()
+    public function run(): Chromosome
     {
         /** @var Chromosome $best */
         $best = maxBy($this->population, $this->fitnessKey);

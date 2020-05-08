@@ -4,7 +4,7 @@ interface Chromosome
 {
     public function fitness(): float;
 
-    public function randomInstance(): self;
+    public static function randomInstance(): self;
 
     public function crossover(Chromosome $chromosome): array;
 
