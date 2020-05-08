@@ -20,7 +20,7 @@ class GeneticAlgorithm
     private float $mutationChance;
     private float $crossoverChance;
     private string $selectionType;
-    private $fitnessKey;
+    private string $fitnessKey;
 
     public function __construct(
         Sequence $initialPopulation,
@@ -37,7 +37,7 @@ class GeneticAlgorithm
         $this->mutationChance = $mutationChance;
         $this->crossoverChance = $crossoverChance;
         $this->selectionType = $selectionType;
-        $this->fitnessKey = [$this->population[0], 'fitness'];
+        $this->fitnessKey = 'fitness';
     }
 
     /**
@@ -56,7 +56,6 @@ class GeneticAlgorithm
     }
 
     /**
-     * TODO
      * Choose num_participants at random and take the best 2
      *
      * @param int $numParticipants
@@ -64,10 +63,12 @@ class GeneticAlgorithm
      */
     public function pickTournament(int $numParticipants): array
     {
-        $pick1 = $this->population[mt_rand(0, $this->population->count() - 1)];
-        $pick2 = $this->population[mt_rand(0, $this->population->count() - 1)];
+        $participantsKeys = array_rand($this->population->toArray(), $numParticipants);
+        $participants = array_map(function ($key) {
+            return $this->population[$key];
+        }, $participantsKeys);
 
-        return [$pick1, $pick2];
+        return bestFrom($participants, $this->fitnessKey,2);
     }
 
     /**
@@ -113,7 +114,7 @@ class GeneticAlgorithm
     {
         $population = array_map(function(Chromosome $individual) {
             if (rand(0, 100) < $this->mutationChance) {
-                $individual = $individual->mutate();
+                $individual->mutate();
             }
 
             return $individual;
@@ -136,7 +137,8 @@ class GeneticAlgorithm
                 return $best;
             }
 
-            echo "Generation {$generation} Best {$best->fitness()} Avg " . meanBy($this->population, $this->fitnessKey);
+            echo "Generation {$generation} Best {$best->fitness()} Avg " . meanBy($this->population, $this->fitnessKey)
+                . "\n";
 
             $this->reproduceAndReplace();
 
@@ -154,22 +156,49 @@ class GeneticAlgorithm
     }
 }
 
-/** TODO */
-function maxBy(Sequence $values, callable $property)
+function bestFrom(array $values, string $callback, int $quantity = 1)
 {
-    $propertyValues = array_map(function(Chromosome $individual) {
-        return $individual->fitness();
-    }, $values->toArray());
+    $result = array_map(function(object $value) use ($callback) {
+        return $value->$callback();
+    }, $values);
 
-    return max($propertyValues);
+    arsort($result);
+    $best = [];
+    $i = 1;
+
+    foreach ($result as $key => $value) {
+        $best[] = $values[$key];
+
+        if ($i == $quantity) {
+            break;
+        }
+
+        $i++;
+    }
+
+    return $best;
 }
 
-/** TODO */
-function meanBy(Sequence $values, $property)
+function maxBy(Sequence $values, string $callback)
 {
-    $propertyValues = array_map(function(Chromosome $individual) {
-        return $individual->fitness();
-    }, $values->toArray());
+    $values = $values->toArray();
 
-    return array_sum($propertyValues) / count($propertyValues);
+    $result = array_map(function(object $value) use ($callback) {
+        return $value->$callback();
+    }, $values);
+
+    $keyForHighest = array_keys($result, max($result))[0];
+
+    return $values[$keyForHighest];
+}
+
+function meanBy(Sequence $values, string $callback)
+{
+    $values = $values->toArray();
+
+    $result = array_map(function(object $value) use ($callback) {
+        return $value->$callback();
+    }, $values);
+
+    return array_sum($result) / count($result);
 }

@@ -77,16 +77,17 @@ $initialPopulation = TypedSequence::forType(SimpleEquation::class);
 
 foreach (range(1, 20) as $item) {
     $initialPopulation->append(SimpleEquation::randomInstance());
-    $ga = new GeneticAlgorithm(
-        $initialPopulation,
-        13,
-        100,
-        10,
-        70
-    );
-
-    /** @var SimpleEquation $result */
-    $result = $ga->run();
-
-    echo $result;
 }
+
+$ga = new GeneticAlgorithm(
+    $initialPopulation,
+    13,
+    100,
+    10,
+    70
+);
+
+/** @var SimpleEquation $result */
+$result = $ga->run();
+
+echo $result;
