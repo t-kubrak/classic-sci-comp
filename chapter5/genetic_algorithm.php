@@ -41,7 +41,6 @@ class GeneticAlgorithm
     }
 
     /**
-     * TODO
      * Use the probability distribution wheel to pick 2 parents
      *
      * @param array $wheel
@@ -49,8 +48,8 @@ class GeneticAlgorithm
      */
     public function pickRoulette(array $wheel): array
     {
-        $pick1 = $this->population[mt_rand(0, $this->population->count() - 1)];
-        $pick2 = $this->population[mt_rand(0, $this->population->count() - 1)];
+        $pick1 = $this->population->offsetGet(weightedRandom($wheel));
+        $pick2 = $this->population->offsetGet(weightedRandom($wheel));
 
         return [$pick1, $pick2];
     }
@@ -83,7 +82,7 @@ class GeneticAlgorithm
             // pick 2 parents
             if ($this->selectionType == SelectionType::ROULETTE) {
                 $wheel = array_map(function(Chromosome $chromosome) {
-                    $chromosome->fitness();
+                    return $chromosome->fitness();
                 }, $this->population->toArray());
 
                 $parents = $this->pickRoulette($wheel);
@@ -201,4 +200,21 @@ function meanBy(Sequence $values, string $callback)
     }, $values);
 
     return array_sum($result) / count($result);
+}
+
+function weightedRandom(array $weights): int
+{
+    $pick = randomFloat(0, array_sum($weights));
+
+    foreach ($weights as $key => $fitness) {
+        $pick -= $fitness;
+
+        if ($pick <= 0) {
+            return $key;
+        }
+    }
+}
+
+function randomFloat($min = 0, $max = 1) {
+    return $min + mt_rand() / mt_getrandmax() * ($max - $min);
 }

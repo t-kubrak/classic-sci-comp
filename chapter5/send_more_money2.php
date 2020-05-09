@@ -1,5 +1,9 @@
 <?php
 
+require_once "../data_structures.php";
+require_once "chromosome.php";
+require_once "genetic_algorithm.php";
+
 class SendMoreMoney2 implements Chromosome
 {
     private Sequence $letters;
@@ -36,7 +40,7 @@ class SendMoreMoney2 implements Chromosome
 
         $difference = abs($money - ($send + $more));
 
-        return 1/($difference / 1);
+        return 1 / ($difference + 1);
     }
 
     public static function randomInstance(): self
@@ -52,7 +56,7 @@ class SendMoreMoney2 implements Chromosome
         /** @var SendMoreMoney2 $child2 */
         $child2 = clone $other;
 
-        [$idx1, $idx2] = array_rand(range(0, $this->letters - 1), 2);
+        [$idx1, $idx2] = array_rand(range(0, $this->letters->count() - 1), 2);
         $child1Letters = $child1->getLetters();
         $child2Letters = $child2->getLetters();
         $l1 = $child1Letters[$idx1];
@@ -71,7 +75,7 @@ class SendMoreMoney2 implements Chromosome
 
     public function mutate(): void
     {
-        [$idx1, $idx2] = array_rand(range(0, $this->letters - 1), 2);
+        [$idx1, $idx2] = array_rand(range(0, $this->letters->count() - 1), 2);
 
         $old = $this->letters[$idx1];
         $this->letters[$idx1] = $this->letters[$idx2];
