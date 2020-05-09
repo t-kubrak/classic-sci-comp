@@ -6,7 +6,7 @@ interface Chromosome
 
     public static function randomInstance(): self;
 
-    public function crossover(Chromosome $chromosome): array;
+    public function crossover(Chromosome $other): array;
 
     public function mutate(): void;
 }
