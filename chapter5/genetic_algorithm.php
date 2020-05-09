@@ -204,9 +204,15 @@ function meanBy(Sequence $values, string $callback)
 
 function weightedRandom(array $weights): int
 {
-    $pick = randomFloat(0, array_sum($weights));
+    $fitnessSum = array_sum($weights);
 
-    foreach ($weights as $key => $fitness) {
+    $fitnessFractions = array_map(function($value) use ($fitnessSum) {
+        return $value / $fitnessSum;
+    }, $weights);
+
+    $pick = randomFloat(0, array_sum($fitnessFractions));
+
+    foreach ($fitnessFractions as $key => $fitness) {
         $pick -= $fitness;
 
         if ($pick <= 0) {
