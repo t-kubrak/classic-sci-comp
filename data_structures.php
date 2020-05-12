@@ -179,6 +179,7 @@ class TypedSequence extends Sequence
 
     protected function __construct()
     {
+        parent::__construct();
     }
 
     public function append($value): self
