@@ -118,6 +118,17 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
         return new self(array_reverse($this->values));
     }
 
+    public function min()
+    {
+        return min($this->values);
+    }
+
+    public function max()
+    {
+        return max($this->values);
+    }
+
+
     /**
      * @return float|int
      */

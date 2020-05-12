@@ -1,5 +1,7 @@
 <?php
 
+require_once "../data_structures.php";
+
 class DataPoint
 {
     private Sequence $originals;
@@ -14,6 +16,11 @@ class DataPoint
     public function getDimensions(): Sequence
     {
         return $this->dimensions;
+    }
+
+    public function setDimensions(Sequence $dimensions): void
+    {
+        $this->dimensions = $dimensions;
     }
 
     public function numDimensions(): int
