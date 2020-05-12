@@ -21,6 +21,7 @@ function zscores(Sequence $original)
 
 class Cluster
 {
+    /** @var TypedSequence|DataPoint[] */
     private TypedSequence $points;
     private DataPoint $centroid;
 
@@ -60,9 +61,8 @@ class Cluster
 
     public function __toString(): string
     {
-        $points = implode(", ", $this->points->toArray());
-
-        return "[{$points}]";
+        $points = implode("), (", $this->getPoints()->toArray());
+        return "[({$points})]";
     }
 }
 
@@ -117,7 +117,11 @@ class KMeans
 
     private function zscoreNormalize(): void
     {
-        $zscored = new Sequence(new Sequence());
+        $zscored = new Sequence([]);
+
+        foreach (range(0, $this->points->count() - 1) as $item) {
+            $zscored->append(new Sequence());
+        }
 
         foreach (range(0, $this->points[0]->numDimensions() - 1) as $dimension) {
             $dimensionSlice = $this->dimensionSlice($dimension);
@@ -151,14 +155,17 @@ class KMeans
      */
     public function assignClusters(): void
     {
-        foreach ($this->points as $point) {
-            $closest = min(
-                array_map(function(DataPoint $centroid) use ($point) {
-                    return $centroid->distance($point);
-                }, $this->centroids()->toArray())
-            );
+        $centroids = $this->centroids();
 
-            $idx = $this->centroids()->index($closest);
+        foreach ($this->points as $point) {
+            $distances = array_map(function (DataPoint $centroid) use ($point) {
+                return $centroid->distance($point);
+            }, $centroids->toArray());
+
+            $closestKey = array_keys($distances, min($distances))[0];
+            $closest = $centroids->offsetGet($closestKey);
+
+            $idx = $centroids->index($closest);
             $cluster = $this->clusters[$idx];
             $cluster->addPoint($point);
         }
@@ -207,7 +214,7 @@ class KMeans
 
             // have centroids moved ?
             if ($oldCentroids == $this->centroids()) {
-                echo "Converged after {$iteration} iterations";
+                echo "Converged after {$iteration} iterations\n";
                 return $this->clusters;
             }
         }
@@ -216,9 +223,9 @@ class KMeans
     }
 }
 
-$point1 = new DataPoint(new Sequence(2.0, 1.0, 1.0));
-$point2 = new DataPoint(new Sequence(2.0, 2.0, 5.0));
-$point3 = new DataPoint(new Sequence(3.0, 1.5, 2.5));
+$point1 = new DataPoint(new Sequence([2.0, 1.0, 1.0]));
+$point2 = new DataPoint(new Sequence([2.0, 2.0, 5.0]));
+$point3 = new DataPoint(new Sequence([3.0, 1.5, 2.5]));
 
 $points = TypedSequence::forType(DataPoint::class);
 
@@ -230,5 +237,5 @@ $kmeansTest = new KMeans(2, $points);
 $testClusters = $kmeansTest->run();
 
 foreach ($testClusters as $index => $cluster) {
-    echo "Cluster {$index}: {$cluster}";
+    echo "Cluster {$index}: {$cluster} \n";
 }

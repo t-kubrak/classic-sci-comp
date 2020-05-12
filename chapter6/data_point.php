@@ -10,7 +10,7 @@ class DataPoint
     public function __construct(Sequence $initial)
     {
         $this->originals = $initial;
-        $this->dimensions = $initial;
+        $this->dimensions = clone $initial;
     }
 
     public function getDimensions(): Sequence
@@ -42,5 +42,10 @@ class DataPoint
     public function equals(DataPoint $other): bool
     {
         return $this->dimensions == $other->getDimensions();
+    }
+
+    public function __toString(): string
+    {
+        return implode(", ", $this->originals->toArray());
     }
 }

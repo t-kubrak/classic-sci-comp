@@ -160,7 +160,7 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
     {
         $deviations = array_map(function($value, $otherValue) {
             return [$value, $otherValue];
-        }, $this->values, $otherValues);
+        }, $this->values, $otherValues->toArray());
 
         return new Sequence($deviations);
     }
