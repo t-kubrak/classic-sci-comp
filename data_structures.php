@@ -117,6 +117,42 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
     {
         return new self(array_reverse($this->values));
     }
+
+    /**
+     * @return float|int
+     */
+    public function sum()
+    {
+        return array_sum($this->values);
+    }
+
+    /**
+     * @return float|int
+     */
+    public function mean()
+    {
+        return $this->sum() / $this->count();
+    }
+
+    public function pstDev(): float
+    {
+        $mean = $this->mean();
+
+        $deviations = array_map(function($value) use ($mean) {
+            return ($value - $mean) ** 2;
+        }, $this->values);
+
+        return sqrt(array_sum($deviations) / $this->count());
+    }
+
+    public function zip(Sequence $otherValues): Sequence
+    {
+        $deviations = array_map(function($value, $otherValue) {
+            return [$value, $otherValue];
+        }, $this->values, $otherValues);
+
+        return new Sequence($deviations);
+    }
 }
 
 class TypedSequence extends Sequence
