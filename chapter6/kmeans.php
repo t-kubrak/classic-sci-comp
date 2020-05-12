@@ -212,8 +212,10 @@ class KMeans
 
             $this->generateCentroids(); // find new centroids
 
-            // have centroids moved ?
-            if ($oldCentroids == $this->centroids()) {
+            $newCentroids = $this->centroids();
+
+            // finish, if centroids are not moving
+            if ($oldCentroids == $newCentroids) {
                 echo "Converged after {$iteration} iterations\n";
                 return $this->clusters;
             }
