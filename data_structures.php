@@ -158,11 +158,11 @@ class Sequence implements ArrayAccess, Countable, IteratorAggregate
 
     public function zip(Sequence $otherValues): Sequence
     {
-        $deviations = array_map(function($value, $otherValue) {
+        $values = array_map(function($value, $otherValue) {
             return [$value, $otherValue];
         }, $this->values, $otherValues->toArray());
 
-        return new Sequence($deviations);
+        return new Sequence($values);
     }
 }
 
