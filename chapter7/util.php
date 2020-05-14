@@ -18,3 +18,23 @@ function derivativeSigmoid(float $x): float
 
     return $sig * (1 - $sig);
 }
+
+/**
+ * @param Sequence[]|Sequence $dataset
+ */
+function normalizeByFeatureScaling(Sequence $dataset)
+{
+    foreach (range(0, $dataset[0]->count() - 1) as $colNum) {
+        $column = array_map(
+            fn($row) => $row[$colNum],
+            $dataset->toArray()
+        );
+
+        $maximum = max($column);
+        $minimum = min($column);
+
+        foreach (range(0, $dataset->count() - 1) as $rowNum) {
+            $dataset[$rowNum][$colNum] = ($dataset[$rowNum][$colNum] - $minimum) / ($maximum - $minimum);
+        }
+    }
+}
