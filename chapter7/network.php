@@ -77,13 +77,13 @@ class Network
      */
     public function outputs(Sequence $input): Sequence
     {
-        $result = array_reduce(
+        return array_reduce(
             $this->layers->toArray(),
-            fn(Sequence $inputs, Layer $layer) => $layer->outputs($inputs),
+            function(Sequence $inputs, Layer $layer) {
+                return $layer->outputs($inputs);
+            },
             $input
         );
-
-        return $result;
     }
 
     /**
@@ -113,7 +113,7 @@ class Network
 
         foreach ($layers as &$layer) {
             foreach ($layer->getNeurons() as &$neuron) {
-                foreach (range(1, $neuron->getWeights()->count() - 1) as $w) {
+                foreach (range(0, $neuron->getWeights()->count() - 1) as $w) {
                     $weight = $neuron->getWeights()[$w]
                         + ($neuron->getLearningRate()
                             * ($layer->getPreviousLayer()->getOutputCache()[$w]) * $neuron->getDelta()
@@ -150,7 +150,8 @@ class Network
         foreach ($inputs->zip($expected) as $inputAndExpected) {
             $input = $inputAndExpected[0];
             $expected = $inputAndExpected[1];
-            $result = $interpretOutput($this->outputs($input));
+            $output = $this->outputs($input);
+            $result = $interpretOutput($output);
 
             if ($result == $expected) {
                 $correct += 1;

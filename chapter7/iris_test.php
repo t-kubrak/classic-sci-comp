@@ -11,7 +11,7 @@ $irises = array_map('str_getcsv', file('iris.csv'));
 shuffle($irises);
 
 foreach ($irises as $iris) {
-    $parameters = array_slice($iris, 0, 3);
+    $parameters = array_slice($iris, 0, 4);
     $parameters = new Sequence(array_map(fn($n) => floatval($n), $parameters));
 
     $irisParameters->append($parameters);

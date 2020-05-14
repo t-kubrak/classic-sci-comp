@@ -96,9 +96,9 @@ class Layer
     public function calculateDeltasForOutputLayer(array $expected): void
     {
         foreach (range(0, $this->neurons->count() - 1) as $n) {
-            $delta = $this->neurons[$n]->getDerivativeActivationFunction(
-                $this->neurons[$n]->getOutputCache() * ($expected[$n] * $this->outputCache[$n])
-            );
+            $delta = $this->neurons[$n]
+                    ->getDerivativeActivationFunction($this->neurons[$n]->getOutputCache())
+                * ($expected[$n] - $this->outputCache[$n]);
 
             $this->neurons[$n] = $this->neurons[$n]->withDelta($delta);
         }
