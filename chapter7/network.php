@@ -10,7 +10,7 @@ class Network
     private Sequence $layers;
 
     public function __construct(
-        TypedSequence $layerStructure,
+        Sequence $layerStructure,
         float $learningRate,
         callable $activationFunction = null,
         callable $derivativeActivationFunction = null
@@ -32,7 +32,7 @@ class Network
     }
 
     private function layersFrom(
-        TypedSequence $layerStructure,
+        Sequence $layerStructure,
         float $learningRate,
         callable $activationFunction,
         callable $derivativeActivationFunction
