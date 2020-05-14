@@ -84,15 +84,16 @@ class Layer
         $this->outputCache = $inputs;
 
         if ($this->previousLayer) {
-            $this->outputCache = array_map(function(Neuron $n) use ($inputs) {
-                return $n->output($inputs);
-            }, $this->neurons->toArray());
+            $this->outputCache = new Sequence(array_map(
+                fn(Neuron $n) => $n->output($inputs),
+                $this->neurons->toArray()
+            ));
         }
 
         return $this->outputCache;
     }
 
-    public function calculateDeltasForOutputLayer(Sequence $expected): void
+    public function calculateDeltasForOutputLayer(array $expected): void
     {
         foreach (range(0, $this->neurons->count() - 1) as $n) {
             $delta = $this->neurons[$n]->getDerivativeActivationFunction(

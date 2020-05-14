@@ -1,5 +1,8 @@
 <?php
 
+require_once "../data_structures.php";
+require_once "network.php";
+
 $irisParameters = new Sequence();
 $irisClassifications = new Sequence();
 $irisSpecies = TypedSequence::forType('string');
@@ -9,11 +12,11 @@ shuffle($irises);
 
 foreach ($irises as $iris) {
     $parameters = array_slice($iris, 0, 3);
-    $parameters = array_map(fn($n) => floatval($n), $parameters);
+    $parameters = new Sequence(array_map(fn($n) => floatval($n), $parameters));
 
     $irisParameters->append($parameters);
 
-    $species = array_slice($iris, -1, 1);
+    $species = $iris[4];
 
     if ($species == "Iris-setosa") {
         $irisClassifications->append([1.0, 0.0, 0.0]);
@@ -24,9 +27,9 @@ foreach ($irises as $iris) {
     }
 
     $irisSpecies->append($species);
-
-    normalizeByFeatureScaling($irisParameters);
 }
+
+normalizeByFeatureScaling($irisParameters);
 
 $layerStructure = new Sequence([4, 6, 3]);
 
@@ -57,4 +60,4 @@ $irisTestersCorrect = new Sequence(array_slice($irisSpecies->toArray(), 140, 10)
 $irisResults = $irisNetwork->validate($irisTesters, $irisTestersCorrect, 'irisInterpretOutput');
 
 $percentage = $irisResults[2] * 100;
-echo "{$irisResults[0]} correct if {$irisResults[1]} = {$percentage}%";
+echo "{$irisResults[0]} correct of {$irisResults[1]} = {$percentage}%";

@@ -51,12 +51,11 @@ class Network
         $layers->append($inputLayer);
 
         // hidden layers and output layer
-        foreach (range(1, $layerStructure->count() - 1) as $key) {
-            $previous = $layerStructure[$key - 1];
-            $numNeurons = $layerStructure[$key];
+        foreach (range(1, $layerStructure->count() - 1) as $previous => $index) {
+            $numNeurons = $layerStructure[$index];
 
             $nextLayer = new Layer(
-                $this->layers[$previous],
+                $layers[$previous],
                 $numNeurons,
                 $learningRate,
                 $activationFunction,
@@ -91,7 +90,7 @@ class Network
      * Figure out each neuron's changes based on the errors of the output
      * versus the expected outcome
      */
-    public function backpropagate(Sequence $expected): void
+    public function backpropagate(array $expected): void
     {
         $lastLayer = $this->layers->count() - 1;
         $this->layers[$lastLayer]->calculateDeltasForOutputLayer($expected);
@@ -110,12 +109,11 @@ class Network
     public function updateWeights(): void
     {
         /** @var Layer[] $layers */
-        $layers = $this->layers->toArray();
-        next($layers);
+        $layers = array_slice($this->layers->toArray(), 1);
 
         foreach ($layers as &$layer) {
             foreach ($layer->getNeurons() as &$neuron) {
-                foreach (range(0, $neuron->getWeights()->count() - 1) as $w) {
+                foreach (range(1, $neuron->getWeights()->count() - 1) as $w) {
                     $weight = $neuron->getWeights()[$w]
                         + ($neuron->getLearningRate()
                             * ($layer->getPreviousLayer()->getOutputCache()[$w]) * $neuron->getDelta()

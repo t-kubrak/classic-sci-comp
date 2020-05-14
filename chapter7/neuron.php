@@ -40,7 +40,7 @@ class Neuron
     {
         $this->outputCache = dotProduct($inputs->toArray(), $this->weights->toArray());
 
-        return $this->activationFunction($this->outputCache);
+        return call_user_func_array($this->activationFunction, [$this->outputCache]);
     }
 
     public function withDelta(float $delta): self
@@ -59,7 +59,7 @@ class Neuron
 
     public function getDerivativeActivationFunction(float $input): float
     {
-        return $this->derivativeActivationFunction($input);
+        return call_user_func_array($this->derivativeActivationFunction, [$input]);
     }
 
     public function getOutputCache(): float
