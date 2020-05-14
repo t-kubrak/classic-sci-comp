@@ -50,6 +50,13 @@ class Neuron
         return $neuron;
     }
 
+    public function withWeight(int $index, float $weight): self
+    {
+        $neuron = clone $this;
+        $neuron->weights[$index] = $weight;
+        return $neuron;
+    }
+
     public function getDerivativeActivationFunction(float $input): float
     {
         return $this->derivativeActivationFunction($input);
@@ -68,5 +75,10 @@ class Neuron
     public function getDelta(): float
     {
         return $this->delta;
+    }
+
+    public function getLearningRate(): float
+    {
+        return $this->learningRate;
     }
 }

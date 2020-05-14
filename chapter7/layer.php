@@ -122,4 +122,17 @@ class Layer
             $this->neurons[$key] = $this->neurons[$key]->withDelta($delta);
         }
     }
+
+    public function getPreviousLayer(): ?Layer
+    {
+        return $this->previousLayer;
+    }
+
+    /**
+     * @return float[]|Sequence
+     */
+    public function getOutputCache(): Sequence
+    {
+        return $this->outputCache;
+    }
 }
