@@ -23,7 +23,7 @@ function minimax(Board $board, bool $maximizing, Piece $originalPlayer, int $max
 
         foreach ($board->legalMoves() as $move) {
             $result = minimax($board->move($move), true, $originalPlayer, $maxDepth - 1);
-            $worstEval = max($result, $worstEval);
+            $worstEval = min($result, $worstEval);
         }
 
         return $worstEval;
