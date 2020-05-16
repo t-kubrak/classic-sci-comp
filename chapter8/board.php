@@ -30,12 +30,12 @@ abstract class Board
 
     abstract function legalMoves(): TypedSequence;
 
-   abstract function isWin(): bool;
+    abstract function isWin(): bool;
 
-   protected function isDraw(): bool
-   {
-       return !$this->isWin() && $this->legalMoves()->count() == 0;
-   }
+    public function isDraw(): bool
+    {
+        return !$this->isWin() && $this->legalMoves()->count() == 0;
+    }
 
-   abstract function evaluate(Piece $player): float;
+    abstract function evaluate(Piece $player): float;
 }
