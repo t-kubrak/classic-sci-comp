@@ -29,13 +29,13 @@ interface Piece
 
 abstract class Board
 {
-    abstract function turn(): Piece;
+    public abstract function turn(): Piece;
 
-    abstract function move(Move $location): Board;
+    public abstract function move(Move $location): Board;
 
-    abstract function legalMoves(): TypedSequence;
+    public abstract function legalMoves(): TypedSequence;
 
-    abstract function isWin(): bool;
+    public abstract function isWin(): bool;
 
     public function isDraw(): bool
     {

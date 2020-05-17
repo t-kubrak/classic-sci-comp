@@ -1,5 +1,7 @@
 <?php
 
+require_once "../data_structures.php";
+
 class C4Piece implements Piece
 {
     public const B = "B";
@@ -167,12 +169,12 @@ class C4Board extends Board
         $this->segments = generateSegments(self::NUM_COLUMNS, self::NUM_ROWS, self::SEGMENT_LENGTH);
     }
 
-    function turn(): C4Piece
+    public function turn(): C4Piece
     {
         return $this->turn;
     }
 
-    function move(Move $location): Board
+    public function move(Move $location): Board
     {
         $tempPosition = clone $this->position;
 
@@ -185,7 +187,7 @@ class C4Board extends Board
         return new C4Board($tempPosition, $this->turn()->opposite());
     }
 
-    function legalMoves(): TypedSequence
+    public function legalMoves(): TypedSequence
     {
         $moves = TypedSequence::forType(Move::class);
 
@@ -220,7 +222,7 @@ class C4Board extends Board
         return new Sequence([$blackCount, $redCount]);
     }
 
-    function isWin(): bool
+    public function isWin(): bool
     {
         foreach ($this->segments as $segment) {
             [$blackCount, $redCount] = $this->countSegment($segment);
@@ -265,7 +267,7 @@ class C4Board extends Board
         return $score;
     }
 
-    function evaluate(Piece $player): float
+    public function evaluate(Piece $player): float
     {
         $total = 0;
 
