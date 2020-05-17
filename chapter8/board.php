@@ -15,6 +15,11 @@ class Move
     {
         return $this->value;
     }
+
+    public function __toString(): string
+    {
+        return strval($this->value);
+    }
 }
 
 interface Piece

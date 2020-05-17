@@ -115,10 +115,10 @@ class TTTBoard extends Board
 
     public function __toString(): string
     {
-        return "{$this->position[0]}|{$this->position[1]}|{$this->position[2]}\n
-            -----\n
-            {$this->position[3]}|{$this->position[4]}|{$this->position[5]}\n
-            -----\n
-            {$this->position[6]}|{$this->position[7]}|{$this->position[8]}\n";
+        return "{$this->position[0]}|{$this->position[1]}|{$this->position[2]}\n"
+            ."-----\n"
+            ."{$this->position[3]}|{$this->position[4]}|{$this->position[5]}\n"
+            ."-----\n"
+            ."{$this->position[6]}|{$this->position[7]}|{$this->position[8]}\n";
     }
 }
