@@ -2,9 +2,9 @@
 
 class C4Piece implements Piece
 {
-    private const B = "B";
-    private const R = "R";
-    private const E = " "; //empty
+    public const B = "B";
+    public const R = "R";
+    public const E = " "; //empty
     private string $value;
 
     public function __construct(string $value)
@@ -95,4 +95,47 @@ function generateSegments(int $numColumns, int $numRows, int $segmentLength): Se
     }
 
     return $segments;
+}
+
+class Column
+{
+    private TypedSequence $container;
+
+    public function __construct()
+    {
+        $this->container = TypedSequence::forType(C4Piece::class);
+    }
+
+    public function full(): bool
+    {
+        return $this->container->count() == C4Board::NUM_ROWS;
+    }
+
+    public function push(C4Piece $item): void
+    {
+        if ($this->full()) {
+            throw new LogicException("Trying to push piece to full column");
+        }
+
+        $this->container->append($item);
+    }
+
+    public function getItem(int $index): C4Piece
+    {
+        if ($index > $this->container->count() - 1) {
+            return new C4Piece(C4Piece::E);
+        }
+
+        return $this->container[$index];
+    }
+
+    public function __clone()
+    {
+        $this->container = clone $this->container;
+    }
+
+    public function copy(): self
+    {
+        return new self();
+    }
 }
