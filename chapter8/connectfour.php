@@ -139,3 +139,157 @@ class Column
         return new self();
     }
 }
+
+class C4Board extends Board
+{
+    public const NUM_ROWS = 6;
+    public const NUM_COLUMNS = 7;
+    public const SEGMENT_LENGTH = 4;
+
+    /** @var TypedSequence|Column[] */
+    private TypedSequence $position;
+    private C4Piece $turn;
+    private Sequence $segments;
+
+    public function __construct(TypedSequence $position = null, C4Piece $turn = null)
+    {
+        if (!$position) {
+            $position = TypedSequence::forType(Column::class);
+
+            for ($i = 0; $i < C4Board::NUM_COLUMNS; $i++) {
+                $this->position->append(new Column());
+            }
+        }
+
+        $this->position = $position;
+        $this->turn = $turn ?? new C4Piece(C4Piece::B);
+
+        $this->segments = generateSegments(self::NUM_COLUMNS, self::NUM_ROWS, self::SEGMENT_LENGTH);
+    }
+
+    function turn(): C4Piece
+    {
+        return $this->turn;
+    }
+
+    function move(Move $location): Board
+    {
+        $tempPosition = clone $this->position;
+
+        foreach (range(0, self::NUM_COLUMNS) as $c) {
+            $tempPosition[$c] = clone $this->position[$c];
+        }
+
+        $tempPosition[$location->getValue()]->push($this->turn);
+
+        return new C4Board($tempPosition, $this->turn()->opposite());
+    }
+
+    function legalMoves(): TypedSequence
+    {
+        $moves = TypedSequence::forType(Move::class);
+
+        foreach (range(0, self::NUM_COLUMNS) as $c) {
+            if (!$this->position[$c]->full()) {
+                $moves->append(new Move($c));
+            }
+        }
+
+        return $moves;
+    }
+
+    /**
+     * Returns the count of black & red pieces in a segment
+     */
+    private function countSegment(Sequence $segment): Sequence
+    {
+        $blackCount = 0;
+        $redCount = 0;
+
+        foreach ($segment as $columnAndRow) {
+            $column = $columnAndRow[0];
+            $row = $columnAndRow[1];
+
+            if ($this->position[$column]->getItem($row) == new C4Piece(C4Piece::B)) {
+                $blackCount += 1;
+            } elseif ($this->position[$column]->getItem($row) == new C4Piece(C4Piece::R)) {
+                $redCount += 1;
+            }
+        }
+
+        return new Sequence([$blackCount, $redCount]);
+    }
+
+    function isWin(): bool
+    {
+        foreach ($this->segments as $segment) {
+            [$blackCount, $redCount] = $this->countSegment($segment);
+
+            if ($blackCount == 4 || $redCount == 4) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function evaluateSegment(Sequence $segment, Piece $player): float
+    {
+        [$blackCount, $redCount] = $this->countSegment($segment);
+
+        if ($redCount > 0 && $blackCount > 0) {
+            return 0;
+        }
+
+        $count = max($redCount, $blackCount);
+        $score = 0;
+
+        if ($count == 2) {
+            $score = 1;
+        } elseif ($count == 3) {
+            $score = 100;
+        } elseif ($count == 4) {
+            $score = 1000000;
+        }
+
+        $color = C4Piece::B;
+
+        if ($redCount > $blackCount) {
+            $color = C4Piece::R;
+        }
+
+        if ($color != $player->getValue()) {
+            return -$score;
+        }
+
+        return $score;
+    }
+
+    function evaluate(Piece $player): float
+    {
+        $total = 0;
+
+        foreach ($this->segments as $segment) {
+            $total += $this->evaluateSegment($segment, $player);
+        }
+
+        return $total;
+    }
+
+    public function __toString(): string
+    {
+        $display = "";
+
+        foreach (array_reverse(range(0, self::NUM_ROWS - 1)) as $r) {
+            $display .= "|";
+
+            foreach (range(0, self::NUM_COLUMNS) as $c) {
+                $display .= "{$this->position[$c]->getItem($r)}|";
+            }
+
+            $display .= PHP_EOL;
+        }
+
+        return $display;
+    }
+}
