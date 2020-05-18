@@ -51,7 +51,7 @@ function knapsack(TypedSequence $items, int $maxCapacity): TypedSequence
         foreach (range(1, $maxCapacity) as $capacity) {
             $previousItemsValue = $table[$i][$capacity];
 
-            // item fits iin knapsack
+            // item fits in knapsack
             if ($capacity >= $item->getWeight()) {
                 $valueFreeingWeightForItem = $table[$i][$capacity - $item->getWeight()];
                 //only take if more valuable than previous item
