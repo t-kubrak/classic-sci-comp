@@ -30,7 +30,7 @@ while (true) {
         break;
     }
 
-    $computerMove = findBestMove($board, 5);
+    $computerMove = findBestMove($board, 3);
     echo "Computer move is {$computerMove}".PHP_EOL;
     $board = $board->move($computerMove);
     echo $board;

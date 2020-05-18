@@ -1,6 +1,7 @@
 <?php
 
 require_once "../data_structures.php";
+require_once "board.php";
 
 class C4Piece implements Piece
 {
@@ -19,9 +20,9 @@ class C4Piece implements Piece
         $opposite = clone $this;
 
         if ($this->value == self::B) {
-            $opposite->value = self::B;
-        } elseif ($this->value == self::R) {
             $opposite->value = self::R;
+        } elseif ($this->value == self::R) {
+            $opposite->value = self::B;
         } else {
             $opposite->value = self::E;
         }
@@ -85,7 +86,7 @@ function generateSegments(int $numColumns, int $numRows, int $segmentLength): Se
 
     // generate the top left to bottom right diagonal segments
     foreach (range(0, $numColumns - $segmentLength) as $c) {
-        foreach (range($segmentLength - 2, $numRows) as $r) {
+        foreach (range($segmentLength - 1, $numRows - 1) as $r) {
             $segment = new Sequence();
 
             foreach (range(0, $segmentLength - 1) as $t) {
@@ -159,7 +160,7 @@ class C4Board extends Board
             $position = TypedSequence::forType(Column::class);
 
             for ($i = 0; $i < C4Board::NUM_COLUMNS; $i++) {
-                $this->position->append(new Column());
+                $position->append(new Column());
             }
         }
 
@@ -178,20 +179,20 @@ class C4Board extends Board
     {
         $tempPosition = clone $this->position;
 
-        foreach (range(0, self::NUM_COLUMNS) as $c) {
+        foreach (range(0, self::NUM_COLUMNS -1) as $c) {
             $tempPosition[$c] = clone $this->position[$c];
         }
 
         $tempPosition[$location->getValue()]->push($this->turn);
 
-        return new C4Board($tempPosition, $this->turn()->opposite());
+        return new self($tempPosition, $this->turn()->opposite());
     }
 
     public function legalMoves(): TypedSequence
     {
         $moves = TypedSequence::forType(Move::class);
 
-        foreach (range(0, self::NUM_COLUMNS) as $c) {
+        foreach (range(0, self::NUM_COLUMNS - 1) as $c) {
             if (!$this->position[$c]->full()) {
                 $moves->append(new Move($c));
             }
@@ -285,7 +286,7 @@ class C4Board extends Board
         foreach (array_reverse(range(0, self::NUM_ROWS - 1)) as $r) {
             $display .= "|";
 
-            foreach (range(0, self::NUM_COLUMNS) as $c) {
+            foreach (range(0, self::NUM_COLUMNS - 1) as $c) {
                 $display .= "{$this->position[$c]->getItem($r)}|";
             }
 
