@@ -20,3 +20,19 @@ function permutations(array $elements): Generator
         }
     }
 }
+
+function cartesian(array $input)
+{
+    $result = [[]];
+    foreach ($input as $key => $values) {
+        $append = [];
+        foreach ($values as $value) {
+            foreach ($result as $data) {
+                $append[] = $data + [$key => $value];
+            }
+        }
+        $result = $append;
+    }
+
+    return $result;
+}
